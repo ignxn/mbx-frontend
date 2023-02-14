@@ -2,6 +2,7 @@ pipeline {
   agent any
   tools {
     nodejs '14.16.0'
+    docker 'Docker1'
   }
   stages {
     stage('Build') {
@@ -9,7 +10,7 @@ pipeline {
         sh 'npm install'
       }
     }
-    stage('Deploy 2') {
+    stage('Deploy') {
       steps {
         script {
           try {
