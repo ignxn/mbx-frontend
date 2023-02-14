@@ -1,57 +1,33 @@
-pipeline {
-    agent any
-    tools {
-        nodejs 'nodejs'
+node {
+  try {
+    stage('Checkout') {
+      checkout scm
     }
-    parameters {
-        choice(name:'VERSION', choices:['1.0', '1.1', '1.2'], description:'Choose the version of the project')
-        booleanParam(name :'executeTests', description:'Execute the tests', defaultValue:false)
+    stage('Environment') {
+      sh 'git --version'
+      echo "Branch: ${env.BRANCH_NAME}"
+      sh 'docker -v'
+      sh 'printenv'
     }
-    stages {
-        stage('Build') {
-            steps {
-                sh 'npm install'
-                // sh 'npm run build'
-            }
-        }
-        stage('Test') {
-            steps {
-                // sh 'npm run test'
-                echo "Test"
-            }
-        }
-        stage('Build Image') {
-            steps {
-                try {
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                        sh 'docker build -t jennykibiri/sample-react-app .'
-                        sh "echo $PASS | docker login -u $USER --password-stdin"
-                        sh 'docker push jennykibiri/sample-react-app'
-                    }
-                } catch (err) {
-                    // handle the error
-                    echo "Error building and pushing Docker image: ${err.getMessage()}"
-                    currentBuild.result = 'FAILURE'
-                    error("Build failed: ${err.getMessage()}")
-                }
-            }
-        }
-        stage ('Deploy') {
-            steps {
-                try {
-                    script {
-                        def dockerCmd = 'docker run  -p 3000:3000 -d jennykibiri/sample-react-app:latest'
-                        sshagent(['ec2-server-key']) {
-                            sh "ssh -o StrictHostKeyChecking=no ec2-user@3.92.144.96 ${dockerCmd}"
-                        }
-                    }
-                } catch (err) {
-                    // handle the error
-                    echo "Error deploying Docker image: ${err.getMessage()}"
-                    currentBuild.result = 'FAILURE'
-                    error("Deployment failed: ${err.getMessage()}")
-                }
-            }
-        }
+    stage('Build Docker test'){
+     sh 'docker build -t react-test -f Dockerfile.test --no-cache .'
     }
+    stage('Docker test'){
+      sh 'docker run --rm react-test'
+    }
+    stage('Clean Docker test'){
+      sh 'docker rmi react-test'
+    }
+    stage('Deploy'){
+      if(env.BRANCH_NAME == 'master'){
+        sh 'docker build -t react-app --no-cache .'
+        sh 'docker tag react-app localhost:5000/react-app'
+        sh 'docker push localhost:5000/react-app'
+        sh 'docker rmi -f react-app localhost:5000/react-app'
+      }
+    }
+  }
+  catch (err) {
+    throw err
+  }
 }
