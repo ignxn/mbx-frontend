@@ -13,7 +13,7 @@ pipeline {
       steps {
         script {
           try {
-            sh 'ls -a'
+            sh 'npm run start'
           } catch (err) {
             throw err
           }
