@@ -1,39 +1,33 @@
-pipeline {
-    try {
-        agent any
-        tools {
-            nodejs '14.16.0'
-        }
-        stage('Build') {
-            steps {
-                sh 'npm install'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo "Test"
-            }
-        }
-        stage('Build Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'ihnatsi-docker-hub', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh 'docker build -t ihnatsi/mbx-frontend .'
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push ihnatsi/mbx-frontend'
-                }
-            }
-        }
-        stage ('Deploy') {
-            steps {
-                script {
-                    def dockerCmd = 'docker run  -p 3000:3000 -d ihnatsi/mbx-frontend:latest'
-                    sshagent(['ec2-server-key']) {
-                        sh "ssh -o StrictHostKeyChecking=no ec2-user@3.76.218.159 ${dockerCmd}"
-                    }
-                }
-            }
-        }
-    } catch(err) {
-        throw err;
+node {
+  try {
+    stage('Checkout') {
+      checkout scm
     }
+    stage('Environment') {
+      sh 'git --version'
+      echo "Branch: ${env.BRANCH_NAME}"
+      sh 'docker -v'
+      sh 'printenv'
+    }
+    stage('Build Docker test'){
+     sh 'docker build -t react-test -f Dockerfile.test --no-cache .'
+    }
+    stage('Docker test'){
+      sh 'docker run --rm react-test'
+    }
+    stage('Clean Docker test'){
+      sh 'docker rmi react-test'
+    }
+    stage('Deploy'){
+      if(env.BRANCH_NAME == 'master'){
+        sh 'docker build -t react-app --no-cache .'
+        sh 'docker tag react-app localhost:5000/react-app'
+        sh 'docker push localhost:5000/react-app'
+        sh 'docker rmi -f react-app localhost:5000/react-app'
+      }
+    }
+  }
+  catch (err) {
+    throw err
+  }
 }
