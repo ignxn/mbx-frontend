@@ -2,7 +2,9 @@ pipeline {
   agent any
   tools {
     nodejs '14.16.0'
-    docker 'Docker1'
+  }
+  plugins {
+    id 'docker@1.2.1'
   }
   stages {
     stage('Build') {
