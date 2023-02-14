@@ -13,7 +13,7 @@ pipeline {
       steps {
         script {
           try {
-            sh 'npm run start'
+            sh 'docker -v'
           } catch (err) {
             throw err
           }
