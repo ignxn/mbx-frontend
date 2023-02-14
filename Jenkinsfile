@@ -1,22 +1,22 @@
-pipeline {
-    agent any
-    tools { nodejs "14.16.0" }
-    parameters {
-        choice(name:'VERSION', choices:['1.0', '1.1', '1.2'], description:'Choose the version of the project')
-
-        booleanParam(name :'executeTests', description:'Execute the tests', defaultValue:false)
+node {
+  try {
+    stage('Checkout') {
+      checkout scm
     }
-
-    stages {
-        stage('Build') {
-            steps {
-                sh 'npm install'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo "Test"
-            }
-        }
+    stage('Environment') {
+      sh 'git --version'
+      echo "Branch: ${env.BRANCH_NAME}"
+      sh 'docker -v'
+      sh 'printenv'
     }
+    stage('Deploy'){
+      sh 'docker build -t react-app --no-cache .'
+      sh 'docker tag react-app localhost:5000/react-app'
+      sh 'docker push localhost:5000/react-app'
+      sh 'docker rmi -f react-app localhost:5000/react-app'
+    }
+  }
+  catch (err) {
+    throw err
+  }
 }
