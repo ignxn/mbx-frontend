@@ -1,4 +1,7 @@
 node {
+  tools {
+    nodejs '14.16.0'
+  }
   try {
     stage('Checkout') {
       checkout scm
