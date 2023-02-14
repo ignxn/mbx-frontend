@@ -3,9 +3,6 @@ pipeline {
   tools {
     nodejs '14.16.0'
   }
-  plugins {
-    id 'docker@1.2.1'
-  }
   stages {
     stage('Build') {
       steps {
