@@ -36,10 +36,6 @@ pipeline {
           try {
             sh 'docker -v'
             sh 'ls'
-            def dockerCmd = 'docker run  -p 3000:3000 -d ihnatsi/mbx:latest'
-            sshagent(['ec2-frontend']) {
-              sh "ssh -o StrictHostKeyChecking=no ec2-user@3.76.218.159 ${dockerCmd}"
-            }
           } catch (err) {
             throw err
           }
