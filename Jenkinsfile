@@ -6,17 +6,20 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'npm install'
+        script {
+          try {
+            sh 'npm install'
+          } catch(err) {
+            throw err;
+          }
+        }
       }
     }
     stage('Deploy') {
       steps {
         script {
           try {
-            sh 'docker build -t react-app --no-cache .'
-            sh 'docker tag react-app localhost:5000/react-app'
-            sh 'docker push localhost:5000/react-app'
-            sh 'docker rmi -f react-app localhost:5000/react-app'
+            sh 'docker -v'
           } catch (err) {
             throw err
           }
