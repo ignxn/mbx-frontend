@@ -20,6 +20,7 @@ pipeline {
         script {
           try {
             sh 'docker -v'
+            sh 'ls'
           } catch (err) {
             throw err
           }
