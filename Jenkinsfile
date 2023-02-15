@@ -8,6 +8,8 @@ pipeline {
       steps {
         script {
           try {
+            sh 'rm -rf node_modules'
+            sh 'rm package-lock.json'
             sh 'npm install'
           } catch(err) {
             throw err;
