@@ -3,7 +3,6 @@ FROM node:16-alpine as builder
 WORKDIR /app
 # Copy app files
 COPY . .
-RUN npm i
 # Build the app
 RUN npm run build
 
