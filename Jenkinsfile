@@ -18,18 +18,6 @@ pipeline {
         }
       }
     }
-    stage('Build Image') {
-      steps {
-        script {
-          try {
-            sh 'npm run build'
-            sh 'ls -a'
-          } catch(err) {
-            throw err;
-          }
-        }
-      }
-    }
     stage('Deploy') {
       steps {
         script {

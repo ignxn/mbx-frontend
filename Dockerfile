@@ -1,10 +1,10 @@
-FROM node:16-alpine as builder
-# Set the working directory to /app inside the container
-WORKDIR /app
-# Copy app files
-COPY . .
-# Build the app
-RUN npm run build
+#FROM node:16-alpine as builder
+## Set the working directory to /app inside the container
+#WORKDIR /app
+## Copy app files
+#COPY . .
+## Build the app
+#RUN npm run build
 
 # Bundle static assets with nginx
 #FROM nginx:1.21.0-alpine as production
