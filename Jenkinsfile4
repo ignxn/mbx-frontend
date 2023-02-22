@@ -9,6 +9,7 @@ pipeline {
         script {
           try {
             sh 'rm -rf node_modules'
+            sh 'rm package-lock.json'
             sh 'ls -a'
             sh 'npm install'
             sh 'ls -a'
@@ -34,7 +35,7 @@ pipeline {
       steps {
         script {
           try {
-            sh 'ls -a'
+            sh 'ls'
           } catch (err) {
             throw err
           }

@@ -9,6 +9,7 @@ pipeline {
         script {
           try {
             sh 'rm -rf node_modules'
+            sh 'rm package-lock.json'
             sh 'ls -a'
             sh 'npm install'
             sh 'ls -a'
@@ -22,8 +23,11 @@ pipeline {
       steps {
         script {
           try {
-            sh 'npm run build'
-            sh 'ls -a'
+            withCredentials([usernamePassword(credentialsId: 'docker-hub-ihnatsi', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+              sh 'docker build -t ihnatsi/mbx .'
+              sh "echo $PASS | docker login -u $USER --password-stdin"
+              sh 'docker push ihnatsi/mbx'
+            }
           } catch(err) {
             throw err;
           }
@@ -34,7 +38,8 @@ pipeline {
       steps {
         script {
           try {
-            sh 'ls -a'
+            sh 'docker -v'
+            sh 'ls'
           } catch (err) {
             throw err
           }
