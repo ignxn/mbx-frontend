@@ -20,7 +20,7 @@ pipeline {
         script {
           try {
             sshagent(credentials: ['3.76.203.126']) {
-             sh 'scp Dockerfile ec2-user@ec2-3-76-203-126.eu-central-1.compute.amazonaws.com:/var/www/html'
+             sh 'scp -r build ec2-user@ec2-3-76-203-126.eu-central-1.compute.amazonaws.com:/var/www/html'
             }
           } catch (err) {
             throw err
