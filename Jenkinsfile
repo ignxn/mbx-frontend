@@ -9,10 +9,8 @@ pipeline {
         script {
           try {
             sh 'ls -a'
-            sh 'rm -rf build'
-            sh 'npm run build'
-            sh 'ls -a'
           } catch(err) {
+            sh 'echo err'
             throw err;
           }
         }
@@ -26,6 +24,7 @@ pipeline {
              sh 'scp -r build ec2-user@ec2-3-76-203-126.eu-central-1.compute.amazonaws.com:/var/www/html'
             }
           } catch (err) {
+            sh 'echo err'
             throw err
           }
         }
