@@ -19,18 +19,9 @@ pipeline {
       steps {
         script {
           try {
-             def sshKey = credentials('3.76.203.126') // replace with the ID of your SSH credential
-             def sshHost = '3.76.203.126' // replace with your SSH server hostname or IP address
-             def sshUser = 'ec2-user' // replace with your SSH username
-             def sshPort = 22 // replace with your SSH server port number
-             def remoteDir = '/' // replace with the remote directory path where you want to transfer the build folder
-
-             def scpCmd = "scp -i ${sshKey} -r -P ${sshPort} ./build ${sshUser}@${sshHost}:${remoteDir}"
-
-             sh """
-                 echo \"Transferring build folder\"
-                 ${scpCmd}
-             """
+            sshagent(credentials: ['3.76.203.126']) {
+             sh 'scp -r build ec2-user@ec2-3-76-203-126.eu-central-1.compute.amazonaws.com:/var'
+            }
           } catch (err) {
             throw err
           }
