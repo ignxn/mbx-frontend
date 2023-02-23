@@ -9,6 +9,9 @@ pipeline {
         script {
           try {
             sh 'ls -a'
+            sh 'rm -rf build'
+            sh 'npm run build'
+            sh 'ls -a'
           } catch(err) {
             throw err;
           }
