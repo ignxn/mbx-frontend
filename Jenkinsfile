@@ -19,7 +19,7 @@ pipeline {
       steps {
         script {
           try {
-            sh 'ls -a'
+            sh 'scp -r build ec2-user@ec2-3-76-203-126.eu-central-1.compute.amazonaws.com:/var'
           } catch (err) {
             throw err
           }
